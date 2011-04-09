@@ -379,21 +379,25 @@ FB.provide('Auth', {
    * @return         {String}   the xd url bound to the callback
    */
   xdHandler: function(cb, frame, target, isDefault, status, session) {
-    return FB.UIServer._xdNextHandler(function(params) {
+    return FB.UIServer._xdNextHandler(FB.Auth.xdResponseWrapper(cb, status, session), frame, target, isDefault); //+ '&result=xxRESULTTOKENxx';
+  },
+  xdResponseWrapper: function (cb, status, session) {
+    return function(params) {
       try {
         session = FB.JSON.parse(params.session);
       } catch (x) {
         // ignore parse errors
       }
+      if (session) status = 'connected';
+      if (params && params.fb_https && !FB._https) FB._https = true;
       var response = FB.Auth.setSession(session || null, status);
 
       // incase we were granted some new permissions
-      response.perms = (
-        params.result != 'xxRESULTTOKENxx' && params.result || '');
+      response.perms = params && params.perms || null;
 
       // user defined callback
       cb && cb(response);
-    }, frame, target, isDefault) + '&result=xxRESULTTOKENxx';
+    };
   }
 });
 
