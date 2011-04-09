@@ -36,7 +36,7 @@ FB.subclass('XFBML.LogoutButton', 'XFBML.ButtonElement', null, {
    * @return {Boolean} true to continue processing, false to halt it
    */
   setupAndValidate: function() {
-    this.logout = this.getAttribute('perms');
+    this.logout = this.getAttribute('logout');
 
     return true;
   },
